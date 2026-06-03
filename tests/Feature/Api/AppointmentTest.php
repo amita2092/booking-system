@@ -130,4 +130,63 @@ class AppointmentTest extends TestCase
             'booked_at' => now(),
         ]);
     }
+
+    public function test_can_get_appointment_details()
+    {
+        $appointment = $this->createAppointment();
+
+        $response = $this->postJson('/api/v1/appointments/details', [
+            'reference_number' => $appointment->reference_number,
+        ]);
+
+        $response->assertJsonPath(
+            'data.reference_number',
+            $appointment->reference_number
+        );
+    }
+
+    public function test_can_get_doctor_appointments()
+    {
+        $appointment = $this->createAppointment();
+
+        $response = $this->postJson('/api/v1/appointments/doctorAppointments', [
+            'doctor_id' => $appointment->doctor_id,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+    }
+
+    public function test_can_get_doctor_appointments_by_date()
+    {
+        $appointment = $this->createAppointment();
+
+        $response = $this->postJson('/api/v1/appointments/doctorAppointments', [
+            'doctor_id' => $appointment->doctor_id,
+            'date' => now()->addDay()->toDateString(),
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+    }
+
+    public function test_can_get_paginated_doctor_appointments()
+    {
+        $appointment = $this->createAppointment();
+
+        $response = $this->postJson('/api/v1/appointments/doctorAppointments', [
+            'doctor_id' => $appointment->doctor_id,
+            'page' => 1,
+            'per_page' => 10,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+    }
 }
