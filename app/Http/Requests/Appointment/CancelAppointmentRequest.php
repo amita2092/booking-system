@@ -12,7 +12,7 @@ class CancelAppointmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,15 @@ class CancelAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'reference_number' => [
+                'required',
+                'exists:appointments,reference_number'
+            ],
+            'reason' => [
+                'required',
+                'string',
+                'max:1000'
+            ]
         ];
     }
 }

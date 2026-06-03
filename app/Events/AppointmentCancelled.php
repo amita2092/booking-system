@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Appointment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -13,14 +14,15 @@ use Illuminate\Queue\SerializesModels;
 class AppointmentCancelled
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    public Appointment $appointment;
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(Appointment $appointment)
     {
-        //
+        $this->appointment = $appointment;
     }
+
 
     /**
      * Get the channels the event should broadcast on.

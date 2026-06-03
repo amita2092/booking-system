@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use Exception;
+use App\Events\AppointmentBooked;
+use App\Events\AppointmentCancelled;
+use App\Events\AppointmentRescheduled;
 use App\Models\User;
 use App\Models\Appointment;
 use App\Models\AppointmentSlot;
@@ -18,7 +21,7 @@ class AppointmentService
         int $slotId
     ): Appointment {
 
-        return DB::transaction(function () use (
+        $appointment = DB::transaction(function () use (
             $patientId,
             $slotId
         ) {
@@ -73,5 +76,131 @@ class AppointmentService
 
             return $appointment;
         });
+
+        AppointmentBooked::dispatch($appointment);
+
+        return $appointment;
+    }
+
+    public function cancel(
+            string $referenceNumber,
+            string $reason
+        ): Appointment {
+
+            $appointment = DB::transaction(function () use (
+                $referenceNumber,
+                $reason
+            ) {
+
+                $appointment = Appointment::query()
+                    ->lockForUpdate()
+                    ->where(
+                        'reference_number',
+                        $referenceNumber
+                    )
+                    ->firstOrFail();
+
+                if (
+                    $appointment->status === 'cancelled'
+                ) {
+                    throw new \Exception(
+                        'Appointment already cancelled.'
+                    );
+                }
+
+                $appointment->update([
+                    'status' => 'cancelled',
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => $reason,
+                ]);
+
+                AppointmentSlot::where(
+                    'id',
+                    $appointment->slot_id
+                )->update([
+                    'status' => 'available'
+                ]);
+
+                return $appointment;
+            });
+
+            AppointmentCancelled::dispatch($appointment);
+
+            return $appointment;
+    }
+
+    public function reschedule(
+        string $referenceNumber,
+        int $newSlotId
+    ): Appointment {
+
+        $appointment = DB::transaction(function () use (
+            $referenceNumber,
+            $newSlotId
+        ) {
+
+            $appointment = Appointment::query()
+                ->lockForUpdate()
+                ->where('reference_number', $referenceNumber)
+                ->firstOrFail();
+
+            if ($appointment->status === 'cancelled') {
+                throw new \Exception(
+                    'Cancelled appointment cannot be rescheduled.'
+                );
+            }
+
+            $oldSlot = AppointmentSlot::query()
+                ->lockForUpdate()
+                ->findOrFail($appointment->slot_id);
+
+            $newSlot = AppointmentSlot::query()
+                ->lockForUpdate()
+                ->findOrFail($newSlotId);
+
+            // must belong to same doctor
+            if ($oldSlot->doctor_id !== $newSlot->doctor_id) {
+                throw new \Exception(
+                    'You can only reschedule within the same doctor.'
+                );
+            }
+
+            if ($newSlot->status !== 'available') {
+                throw new \Exception(
+                    'Selected slot is not available.'
+                );
+            }
+
+            if (now()->greaterThan($newSlot->slot_start)) {
+                throw new \Exception(
+                    'Cannot reschedule to a past slot.'
+                );
+            }
+
+            if ($oldSlot->id === $newSlot->id) {
+                throw new \Exception(
+                    'New slot must be different from current slot.'
+                );
+            }
+
+            $oldSlot->update([
+                'status' => 'available'
+            ]);
+
+            $newSlot->update([
+                'status' => 'booked'
+            ]);
+
+            $appointment->update([
+                'slot_id' => $newSlot->id,
+                'status' => 'rescheduled'
+            ]);
+
+            return $appointment;
+        });
+
+        AppointmentRescheduled::dispatch($appointment);
+
+        return $appointment;
     }
 }

@@ -12,7 +12,7 @@ class RescheduleAppointmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,14 @@ class RescheduleAppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'reference_number' => [
+                'required',
+                'exists:appointments,reference_number'
+            ],
+            'new_slot_id' => [
+                'required',
+                'exists:appointment_slots,id'
+            ]
         ];
     }
 }

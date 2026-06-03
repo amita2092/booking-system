@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\AppointmentSlot;
 use App\Models\DoctorAvailability;
+use Carbon\Carbon;
 
 class AvailabilityService
 {
@@ -13,7 +15,7 @@ class AvailabilityService
         string $endTime
     ): bool {
 
-        return DoctorAvailability::query()
+        $hasAvailabilityOverlap = DoctorAvailability::query()
             ->where('doctor_id', $doctorId)
             ->where('available_date', $date)
             ->where(function ($query) use (
@@ -31,6 +33,19 @@ class AvailabilityService
                     $startTime
                 );
             })
+            ->exists();
+
+        if ($hasAvailabilityOverlap) {
+            return true;
+        }
+
+        $slotStart = Carbon::parse($date . ' ' . $startTime);
+        $slotEnd = Carbon::parse($date . ' ' . $endTime);
+
+        return AppointmentSlot::query()
+            ->where('doctor_id', $doctorId)
+            ->where('slot_start', '<', $slotEnd)
+            ->where('slot_end', '>', $slotStart)
             ->exists();
     }
 }
