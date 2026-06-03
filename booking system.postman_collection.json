@@ -1,0 +1,439 @@
+{
+	"info": {
+		"_postman_id": "0a57e2ee-53fb-4354-919e-6ee6daf778e7",
+		"name": "booking system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47509036",
+		"_collection_link": "https://prdeep-rawat1999-5970201.postman.co/workspace/Pardeep-Singh-Rawat's-Workspace~84fe0209-47f1-4235-8c0a-07e27c202d6b/collection/47509036-0a57e2ee-53fb-4354-919e-6ee6daf778e7?action=share&source=collection_link&creator=47509036"
+	},
+	"item": [
+		{
+			"name": "create doctor availability",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "doctor_id",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "available_date",
+							"value": "2026-06-03",
+							"type": "text"
+						},
+						{
+							"key": "start_time",
+							"value": "17:00",
+							"type": "text"
+						},
+						{
+							"key": "end_time",
+							"value": "20:00",
+							"type": "text"
+						},
+						{
+							"key": "slot_duration",
+							"value": "30",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}createAvailability",
+					"host": [
+						"{{localUrl}}createAvailability"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list of doctors with availability",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{localUrl}}doctors/availabilities?doctor_id=3",
+					"host": [
+						"{{localUrl}}doctors"
+					],
+					"path": [
+						"availabilities"
+					],
+					"query": [
+						{
+							"key": "doctor_id",
+							"value": "3",
+							"description": "optional"
+						},
+						{
+							"key": "available_date",
+							"value": "2026-06-03",
+							"description": "optional",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient book appointment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patient_id",
+							"value": "7",
+							"type": "text"
+						},
+						{
+							"key": "slot_id",
+							"value": "45",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}appointments",
+					"host": [
+						"{{localUrl}}appointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patients list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{localUrl}}patients",
+					"host": [
+						"{{localUrl}}patients"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "emma",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "patient4@example.com",
+							"disabled": true
+						},
+						{
+							"key": "phone",
+							"value": "8888888004",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cancel appointment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "reference_number",
+							"value": "APT-20260603-F8FA56",
+							"type": "text"
+						},
+						{
+							"key": "reason",
+							"value": "Patient unavailable now",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}appointments/cancel",
+					"host": [
+						"{{localUrl}}appointments"
+					],
+					"path": [
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "reschedule appointment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "reference_number",
+							"value": "APT-20260603-E1DCAB",
+							"type": "text"
+						},
+						{
+							"key": "new_slot_id",
+							"value": "46",
+							"type": "text"
+						},
+						{
+							"key": "patient_id",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}appointments/reschedule",
+					"host": [
+						"{{localUrl}}appointments"
+					],
+					"path": [
+						"reschedule"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "doctor/patient login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "patient3@example.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}login",
+					"host": [
+						"{{localUrl}}login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "appointment details",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "reference_number",
+							"value": "APT-20260603-3CD573",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}appointments/details",
+					"host": [
+						"{{localUrl}}appointments"
+					],
+					"path": [
+						"details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "doctor appointment list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|DZfBMNNG0mwx4HDJk3CqC9GwFUM73mLNPP1S26yr7f9718c8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "doctor_id",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "patient_id",
+							"value": "6",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "status",
+							"value": "rescheduled",
+							"description": "booked|cancelled|rescheduled",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "per_page",
+							"value": "10",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localUrl}}appointments/doctorAppointments",
+					"host": [
+						"{{localUrl}}appointments"
+					],
+					"path": [
+						"doctorAppointments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

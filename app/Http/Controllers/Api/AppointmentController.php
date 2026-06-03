@@ -10,7 +10,7 @@ use App\Services\AppointmentService;
 use App\Http\Requests\Appointment\BookAppointmentRequest;
 use App\Http\Requests\Appointment\CancelAppointmentRequest;
 use App\Http\Requests\Appointment\RescheduleAppointmentRequest;
-
+use App\Http\Requests\Appointment\DoctorAppointmentListRequest;
 
 class AppointmentController extends Controller
 {
@@ -94,6 +94,77 @@ class AppointmentController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 422);
+        }
+    }
+
+
+    public function doctorAppointments(
+        DoctorAppointmentListRequest $request,
+        AppointmentService $service
+    ): JsonResponse {
+
+        try {
+            $filters = $request->validated();
+
+            $appointments = $service->doctorAppointments(
+                (int) $filters['doctor_id'],
+                $filters
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => $appointments->items(),
+                'pagination' => [
+                    'current_page' => $appointments->currentPage(),
+                    'per_page' => $appointments->perPage(),
+                    'total' => $appointments->total(),
+                    'last_page' => $appointments->lastPage(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function details(
+        Request $request,
+        AppointmentService $service
+    ): JsonResponse {
+
+        $request->validate([
+            'reference_number' => ['required', 'string'],
+        ]);
+
+        try {
+
+            $appointment = $service->details(
+                $request->reference_number
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'reference_number' => $appointment->reference_number,
+                    'status' => $appointment->status,
+                    'patient' => $appointment->patient,
+                    'doctor' => $appointment->slot->doctor,
+                    'slot' => $appointment->slot,
+                    'cancel_reason' => $appointment->cancel_reason,
+                    'created_at' => $appointment->created_at,
+                ]
+            ]);
+
+        } catch (Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
         }
     }
 }

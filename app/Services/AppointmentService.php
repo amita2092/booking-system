@@ -203,4 +203,63 @@ class AppointmentService
 
         return $appointment;
     }
+
+    public function doctorAppointments(
+        int $doctorId,
+        array $filters = []
+    )
+    {
+        $query = Appointment::query()
+            ->with([
+                'patient',
+                'slot',
+            ])
+            ->whereHas('slot', function ($q) use ($doctorId) {
+                $q->where('doctor_id', $doctorId);
+            });
+
+        if (! empty($filters['date'])) {
+            $query->whereDate(
+                'appointment_date',
+                $filters['date']
+            );
+        }
+
+        if (! empty($filters['status'])) {
+            $query->where(
+                'status',
+                $filters['status']
+            );
+        }
+
+        if (! empty($filters['patient_id'])) {
+            $query->where(
+                'patient_id',
+                $filters['patient_id']
+            );
+        }
+
+        $perPage = $filters['per_page'] ?? 10;
+
+        return $query
+        ->latest()
+        ->paginate($perPage);
+    }
+
+    public function details(string $referenceNumber): Appointment
+    {
+        $appointment = Appointment::query()
+            ->with([
+                'patient',
+                'slot.doctor',
+            ])
+            ->where('reference_number', $referenceNumber)
+            ->first();
+
+        if (! $appointment) {
+            throw new Exception('Appointment not found.');
+        }
+
+        return $appointment;
+    }
 }

@@ -35,7 +35,7 @@ A Laravel-based Appointment Booking System that allows patients to book, cancel,
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/amita2092/booking-system.git
 cd booking-system
 ```
 
@@ -467,6 +467,154 @@ Reschedules an existing appointment to a new available slot.
 ```
 
 ---
+## 7. Get Appointment Details
+
+**POST** `/appointments/details`
+
+Returns complete appointment information using the appointment reference number.
+
+### Request
+
+```json
+{
+    "reference_number": "APT123456"
+}
+```
+
+### Success Response
+
+```json
+{
+    "success": true,
+    "data": {
+        "reference_number": "APT123456",
+        "status": "booked",
+        "patient": {
+            "id": 1,
+            "name": "John Doe"
+        },
+        "doctor": {
+            "id": 2,
+            "name": "Dr. Smith"
+        },
+        "slot": {
+            "id": 10,
+            "slot_start": "2026-06-10 10:00:00",
+            "slot_end": "2026-06-10 10:30:00"
+        },
+        "created_at": "2026-06-03T12:00:00.000000Z"
+    }
+}
+```
+
+### Error Response
+
+```json
+{
+    "success": false,
+    "message": "Appointment not found."
+}
+```
+
+---
+
+## 8. Get Doctor Appointments
+
+**POST** `/appointments/doctorAppointments`
+
+Returns appointments for a doctor. By default, all appointments for the specified doctor are returned.
+
+Supports optional filtering and pagination.
+
+### Request
+
+#### Get all appointments for a doctor
+
+```json
+{
+    "doctor_id": 1
+}
+```
+
+#### Filter by date
+
+```json
+{
+    "doctor_id": 1,
+    "date": "2026-06-10"
+}
+```
+
+#### Filter by status
+
+```json
+{
+    "doctor_id": 1,
+    "status": "booked"
+}
+```
+
+#### Paginated request
+
+```json
+{
+    "doctor_id": 1,
+    "page": 1,
+    "per_page": 10
+}
+```
+
+#### Combined filters
+
+```json
+{
+    "doctor_id": 1,
+    "date": "2026-06-10",
+    "status": "booked",
+    "page": 1,
+    "per_page": 10
+}
+```
+
+### Request Parameters
+
+| Parameter | Required | Description                  |
+| --------- | -------- | ---------------------------- |
+| doctor_id | Yes      | Doctor ID                    |
+| date      | No       | Filter appointments by date  |
+| status    | No       | Filter by appointment status |
+| page      | No       | Page number for pagination   |
+| per_page  | No       | Records per page             |
+
+### Success Response
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "reference_number": "APT123456",
+            "status": "booked",
+            "patient_id": 1,
+            "slot_id": 10
+        }
+    ],
+    "pagination": {
+        "current_page": 1,
+        "per_page": 10,
+        "total": 25,
+        "last_page": 3
+    }
+}
+```
+
+### Notes
+
+* If no filters are provided, all appointments for the specified doctor are returned.
+* Date filtering returns appointments scheduled on the specified date.
+* Pagination is supported using `page` and `per_page`.
+* Status filtering can be used to retrieve booked, cancelled, or rescheduled appointments.
+
 
 # Event & Notification System
 

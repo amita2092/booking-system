@@ -25,6 +25,10 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/appointments/cancel', [AppointmentController::class, 'cancel']);
 
+        Route::post('/appointments/doctorAppointments', [AppointmentController::class, 'doctorAppointments']);
+
+        Route::post('/appointments/details', [AppointmentController::class, 'details']);
+
         Route::post('/appointments/reschedule', [AppointmentController::class, 'reschedule']);
     });
 });
